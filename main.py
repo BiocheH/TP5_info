@@ -37,14 +37,18 @@ class Point:
         diff = self - other
         return sqrt(diff[0]**2 + diff[1]**2)
 
+    def det(self, A, B) -> float:
+        assert isinstance(A, Point) and isinstance(B, Point), 'given points must be instances of Point'
+        diffA = A - self
+        diffB = B - self
+        return diffA[0]*diffB[1] - diffB[0]*diffA[1]
+    # On remarque que det>0 quand la droite est au-dessus du point courant, =0 quand alignés, <0 quand en dessous.
 
-print(Point(1, 2))
-print(Point((3, 4)))
-print(Point(Point(5, 6)))
+
+
 p = Point(1, 2)
-q = Point((1, 2))
+q = Point((3, 2))
 r = Point(1, 3)
-print(p == q)
-print(p == r)
 print(p.angle(r))
 print(p.distance(r))
+print(p.det(q, r))
