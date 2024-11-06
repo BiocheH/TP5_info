@@ -1,4 +1,5 @@
-#imports éventuels
+from cmath import phase
+from math import sqrt
 
 class Point:
     def __init__(self, *args) -> None:
@@ -10,11 +11,40 @@ class Point:
     def __str__(self) -> str:
         return '(' + str(self.x) + ', ' + str(self.y) + ')'
 
-    def __getitem__(self, coord):
+    def __getitem__(self, coord) -> float:
         if coord < -2 or coord > 1:
             raise IndexError
         return [self.x, self.y][coord]
 
+    def __eq__(self, other) -> bool:
+        assert isinstance(other, Point), 'can only compare two instances of Point'
+        return self[0] == other[0] and self[1] == other[1]
+
+    def __add__(self, other):
+        return Point(self[0] + other[0], self[1] + other[1])
+
+    def __sub__(self, other):
+        return Point(self[0] - other[0], self[1] - other[1])
+
+    def angle(self, other) -> float:
+        assert isinstance(other, Point), 'given point must be instance of Point'
+        assert self != other, 'given point must be different from current point in order to trace a line going through both'
+        cpoint = complex(self[0] - other[0], self[1] - other[1])
+        return phase(cpoint)
+
+    def distance(self, other) -> float:
+        assert isinstance(other, Point), 'given point must be instance of Point'
+        diff = self - other
+        return sqrt(diff[0]**2 + diff[1]**2)
+
+
 print(Point(1, 2))
 print(Point((3, 4)))
 print(Point(Point(5, 6)))
+p = Point(1, 2)
+q = Point((1, 2))
+r = Point(1, 3)
+print(p == q)
+print(p == r)
+print(p.angle(r))
+print(p.distance(r))
