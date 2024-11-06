@@ -44,6 +44,19 @@ class Point:
         return diffA[0]*diffB[1] - diffB[0]*diffA[1]
     # On remarque que det>0 quand la droite est au-dessus du point courant, =0 quand alignés, <0 quand en dessous.
 
+class PointList:
+    def __init__(self, *args) -> None:
+        if isinstance(args[0], list) or isinstance(args[0], tuple):
+            temp = list(args[0])
+            l = temp[:]
+        else:
+            temp = list(args)
+            l = temp[:]
+        assert all(isinstance(elt, Point) for elt in l), 'given points must be instances of Point'
+        self.l = l
+
+    def __str__(self) -> str:
+        return 'Points:\n - ' + '\n - '.join(str(elt) for elt in self.l)
 
 
 p = Point(1, 2)
@@ -52,3 +65,5 @@ r = Point(1, 3)
 print(p.angle(r))
 print(p.distance(r))
 print(p.det(q, r))
+first_list = PointList(p, q ,r)
+print(first_list)
