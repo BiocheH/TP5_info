@@ -1,9 +1,10 @@
 from cmath import phase
 from math import sqrt
+import matplotlib.pyplot as plt
 
 class Point:
     def __init__(self, *args) -> None:
-        if isinstance(args[0], Point) or isinstance(args[0], tuple):
+        if isinstance(args[0], Point) or isinstance(args[0], tuple) or isinstance(args[0], list):
             self.x, self.y = args[0][0], args[0][1]
         else:
             self.x, self.y = args[0], args[1]
@@ -25,6 +26,9 @@ class Point:
 
     def __sub__(self, other):
         return Point(self[0] - other[0], self[1] - other[1])
+
+    def __lt__(self, other):
+        return self[0] < other[0] or (self[0] == other[0] and self[1] < other[1])
 
     def angle(self, other) -> float:
         assert isinstance(other, Point), 'given point must be instance of Point'
@@ -48,22 +52,33 @@ class PointList:
     def __init__(self, *args) -> None:
         if isinstance(args[0], list) or isinstance(args[0], tuple):
             temp = list(args[0])
-            l = temp[:]
+            shallow_copy = temp[:]
         else:
             temp = list(args)
-            l = temp[:]
-        assert all(isinstance(elt, Point) for elt in l), 'given points must be instances of Point'
-        self.l = l
+            shallow_copy = temp[:]
+        self.l = []
+        for elt in shallow_copy:
+            self.l.append(Point(elt))
 
     def __str__(self) -> str:
         return 'Points:\n - ' + '\n - '.join(str(elt) for elt in self.l)
 
+    def plot(self):
+        xs = [elt[0] for elt in self.l]
+        ys = [elt[1] for elt in self.l]
+        plt.scatter(xs, ys)
+        plt.show()
 
-p = Point(1, 2)
-q = Point((3, 2))
-r = Point(1, 3)
+    def extreme(self) -> Point:
+        return min(self.l)
+
+p = Point(1, 3)
+q = Point((2, 3))
+r = Point(1, 2)
 print(p.angle(r))
 print(p.distance(r))
 print(p.det(q, r))
-first_list = PointList(p, q ,r)
+first_list = PointList(p, q, r)
 print(first_list)
+print(first_list.extreme())
+first_list.plot()
