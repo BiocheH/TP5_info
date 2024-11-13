@@ -1,5 +1,6 @@
 from cmath import phase
 from math import sqrt
+from math import pi
 import matplotlib.pyplot as plt
 
 class Point:
@@ -21,20 +22,23 @@ class Point:
         assert isinstance(other, Point), 'can only compare two instances of Point'
         return self[0] == other[0] and self[1] == other[1]
 
+    def __lt__(self, other):
+        return self[0] < other[0] or (self[0] == other[0] and self[1] < other[1])
+
+    def __le__(self, other):
+        return self < other or self == other
+
     def __add__(self, other):
         return Point(self[0] + other[0], self[1] + other[1])
 
     def __sub__(self, other):
         return Point(self[0] - other[0], self[1] - other[1])
 
-    def __lt__(self, other):
-        return self[0] < other[0] or (self[0] == other[0] and self[1] < other[1])
-
     def angle(self, other) -> float:
         assert isinstance(other, Point), 'given point must be instance of Point'
         assert self != other, 'given point must be different from current point in order to trace a line going through both'
         cpoint = complex(self[0] - other[0], self[1] - other[1])
-        return phase(cpoint)
+        return phase(cpoint) + pi
 
     def distance(self, other) -> float:
         assert isinstance(other, Point), 'given point must be instance of Point'
@@ -60,7 +64,7 @@ class PointList:
         for elt in shallow_copy:
             self.l.append(Point(elt))
         self.l.sort()
-        sort_by_angle(self.l)
+        self.l = sort_by_angle(self.l)
 
     def __str__(self) -> str:
         return 'Points:\n - ' + '\n - '.join(str(elt) for elt in self.l)
@@ -69,6 +73,8 @@ class PointList:
         xs = [elt[0] for elt in self.l]
         ys = [elt[1] for elt in self.l]
         plt.scatter(xs, ys)
+        for i in range(len(self.l)):
+            plt.annotate(i, (xs[i], ys[i]))
         plt.show()
 
     def extreme(self) -> Point:
@@ -76,6 +82,17 @@ class PointList:
     # On remarque quand, pour une instance 'first_list' de PointList, on récupère un point à l'aide de extreme,
     # que ce point est extremal (et notamment minimal) car la relation < définie par (a,b) < (c,d) <=>
     # <=> (a<c) ou (a=c et b<d) est bel et bien une relation d'ordre.
+
+    def without_alignment(self) -> list:
+        temp_point = self.l[0]
+        for i in range(1, len(self.l) - 1):
+            popped = 0
+            if temp_point.angle(self.l[i - popped]) == temp_point.angle(self.l[i + 1 - popped]):
+                if self.l[i - popped] < self.l[i + 1 -popped]:
+                    self.l.pop(i)
+                else:
+                    self.l.pop(i+1)
+                popped += 1
 
 
 def sort_by_angle(l: list) -> list:
@@ -90,10 +107,9 @@ def sort_by_angle(l: list) -> list:
 p = Point(1, 3)
 q = Point((2, 3))
 r = Point(1, 2)
-print(p.angle(r))
-print(p.distance(r))
-print(p.det(q, r))
 first_list = PointList(p, q, r)
 print(first_list)
-print(first_list.extreme())
+print(r.angle(p))
+print(r.angle(q))
+print(first_list.without_alignment())
 first_list.plot()
