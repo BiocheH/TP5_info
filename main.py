@@ -93,6 +93,8 @@ class PointList:
                 else:
                     self.l.pop(i+1)
                 popped += 1
+    # effectivement, si 3 points sont alignés, alors celui du milieu est soit dans le polygone et peut être retiré
+    # sans modifier l'enveloppe convexe, soit entre deux angles, et idem.
 
 
 def sort_by_angle(l: list) -> list:
