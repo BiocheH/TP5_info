@@ -59,6 +59,8 @@ class PointList:
         self.l = []
         for elt in shallow_copy:
             self.l.append(Point(elt))
+        self.l.sort()
+        sort_by_angle(self.l)
 
     def __str__(self) -> str:
         return 'Points:\n - ' + '\n - '.join(str(elt) for elt in self.l)
@@ -71,6 +73,19 @@ class PointList:
 
     def extreme(self) -> Point:
         return min(self.l)
+    # On remarque quand, pour une instance 'first_list' de PointList, on récupère un point à l'aide de extreme,
+    # que ce point est extremal (et notamment minimal) car la relation < définie par (a,b) < (c,d) <=>
+    # <=> (a<c) ou (a=c et b<d) est bel et bien une relation d'ordre.
+
+
+def sort_by_angle(l: list) -> list:
+    assert all(isinstance(elt, Point) for elt in l), 'given list must contain only Points'
+    temp = l[:]
+    temp_point = temp.pop(0)
+    temp.sort(key=lambda x: temp_point.angle(x))
+    temp = [temp_point] + temp
+    return temp
+
 
 p = Point(1, 3)
 q = Point((2, 3))
